@@ -21,6 +21,8 @@
   --t-title:1.65rem;             
   --t-h1:2.2rem;
   --t-small:.88rem;
+
+  --mobile-header-h: 92px;
           
 }
 
@@ -517,11 +519,6 @@ main,
 .brand {
   display: inline-block;
   padding-right: 1rem;
-}
-
-/* ===== Mobile header stays fixed; sidebar hides duplicate brand ===== */
-:root{
-  --mobile-header-h: 68px;   /* adjust if you want taller header on phones */
 }
 
 @media (max-width: 768px){
