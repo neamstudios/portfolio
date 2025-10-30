@@ -28,6 +28,7 @@ const $$ = (q,ctx=document)=>Array.from(ctx.querySelectorAll(q));
 })();
 
 
+
 (function smoothScroll(){
   $$('a[href^="#"]').forEach(a=>{
     a.addEventListener('click', (e)=>{
@@ -43,26 +44,64 @@ const $$ = (q,ctx=document)=>Array.from(ctx.querySelectorAll(q));
 })();
 
 
-(function activeSection(){
-  const links = $$('.nav__link');
-  const map = new Map();
-  links.forEach(l=>{
-    const id = l.getAttribute('href');
-    const sec = $(id);
-    if(sec) map.set(sec,l);
-  });
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-      const link = map.get(entry.target);
-      if(!link) return;
-      if(entry.isIntersecting){
-        links.forEach(x=>x.classList.remove('nav__link--active'));
-        link.classList.add('nav__link--active');
+  // Track when user is manually scrolling after a click
+  let isManualScroll = false;
+  const MANUAL_SCROLL_DELAY = 800; // ms to wait before re-enabling IO
+
+  const io = new IntersectionObserver((entries) => {
+    // Skip IO updates if we're in manual scroll
+    if (isManualScroll) return;
+
+    let best = null;
+    let bestDist = Infinity;
+    const viewportMid = window.innerHeight / 2;
+
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const box = entry.target.getBoundingClientRect();
+      const sectionMid = box.top + box.height / 2;
+      const dist = Math.abs(sectionMid - viewportMid);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = entry;
       }
     });
-  },{threshold:.5});
-  map.forEach((_,sec)=> io.observe(sec));
-})();
+
+    if (best) setActive(best.target.id);
+  }, {
+    root: null,
+    rootMargin: "-25% 0px -45% 0px",
+    threshold: [0.05, 0.25, 0.5, 0.75]
+  });
+
+  // Observe only real sections
+  sections.forEach(({ el }) => {
+    if (el.classList.contains("section--PS") && el.offsetHeight < 120) return;
+    io.observe(el);
+  });
+
+  // Smooth scroll + temporary disable of IO highlight
+  const HEADER_OFFSET = 72;
+  links.forEach(a => {
+    a.addEventListener("click", e => {
+      const hash = a.getAttribute("href");
+      if (!hash || !hash.startsWith("#")) return;
+      e.preventDefault();
+
+      const id = hash.slice(1);
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      // disable IO for a short time to avoid flicker
+      isManualScroll = true;
+      setTimeout(() => { isManualScroll = false; }, MANUAL_SCROLL_DELAY);
+
+      const rect = target.getBoundingClientRect();
+      const y = window.pageYOffset + rect.top - HEADER_OFFSET;
+      window.scrollTo({ top: y, behavior: "smooth" });
+      setActive(id); // optimistic highlight
+    });
+  });
 
 
 (function form(){
