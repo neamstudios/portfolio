@@ -407,7 +407,6 @@ a:hover{color:#fff}
 
 .brand__title {
   display: inline-block;
-  white-space: nowrap;           /* keep the brand name on one line */
   overflow: hidden;
   text-overflow: ellipsis;       /* prevents overflow on ultra-small screens */
 }
@@ -444,7 +443,7 @@ a:hover{color:#fff}
 
 /* 2) Remove the visual split between nav (left) and content (right) */
 .sidebar {
-  background: transparent;      /* share the page background */
+  background: #0c1624;      /* share the page background */
   border-right: none;           /* no hard divider */
   box-shadow: none;
 }
@@ -519,3 +518,72 @@ main,
   display: inline-block;
   padding-right: 1rem;
 }
+
+/* ===== Mobile header stays fixed; sidebar hides duplicate brand ===== */
+:root{
+  --mobile-header-h: 68px;   /* adjust if you want taller header on phones */
+}
+
+@media (max-width: 768px){
+
+  /* Fixed mobile header */
+  .site-header{
+    position: fixed !important;
+    top: 0; left: 0; right: 0;
+    height: var(--mobile-header-h)+20px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(180deg, rgba(12,22,36,0.98), rgba(10,19,32,0.96));
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #1b2740;
+    z-index: 1000; /* above sidebar/scrim toggle button */
+  }
+
+  /* Brand in the header (mobile) */
+  .brand--mobile{
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: #fff;
+
+    
+  }
+
+  /* Make sure the hamburger stays clickable above layers */
+  .nav-toggle{
+    position: relative;
+    z-index: 1001;
+  }
+
+  /* Push page content below fixed header */
+  .content{
+    padding-top: calc(var(--mobile-header-h) + 12px) !important;
+  }
+
+  /* Sidebar: no duplicate brand on mobile */
+  .sidebar .brand{
+    display: none !important;     /* hide brand block inside sidebar on phones */
+  }
+
+  /* Sidebar positioning and background while open */
+  .sidebar{
+    padding-top: calc(var(--mobile-header-h) + 38px);  /* start below header line */
+    background: linear-gradient(180deg, rgba(16,28,46,0.98), rgba(10,19,32,0.98)) !important;
+    border-right: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    z-index: 999;  /* sits under header but above content */
+  }
+
+  /* Nav list spacing since brand is hidden */
+  .nav__list{
+    margin-top: 4px;
+  }
+
+  /* Brand can wrap on phones (your preference) */
+  .site-header .brand__title{
+    white-space: normal;
+  }
+}
+
+
+
