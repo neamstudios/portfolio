@@ -276,6 +276,10 @@ a:hover{color:#fff}
 .quote__meta{color:#b7c3d9}
 .quote::before{content:"\201C";position:absolute;left:12px;top:-8px;font-size:42px;color:rgba(255,255,255,.08)}
 
+#testimonials {
+  display: none;
+}
+
 /* ===== Sidebar: scrollable with momentum ===== */
 .sidebar{max-height:100vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
